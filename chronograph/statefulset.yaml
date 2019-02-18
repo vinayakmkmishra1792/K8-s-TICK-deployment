@@ -1,0 +1,52 @@
+# monitoring/chronograf/statefulset.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  namespace: monitoring
+  name: chronograf
+spec:
+  replicas: 1
+  serviceName: chronograf-ss
+  selector:
+    matchLabels:
+      app: chronograf
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      storageClassName: azure-disk-premium
+      resources:
+        requests:
+          storage: 10Gi
+  template:
+    metadata:
+      labels:
+        app: chronograf
+    spec:
+      containers:
+      - name: chronograf
+        image: chronograf:1.4.4.0-alpine
+        command: ["chronograf"]
+        args: ["--influxdb-url=http://influxdb.monitoring.svc.cluster.local:8086", "--kapacitor-url=http://kapacitor.monitoring.svc.cluster.local:9092"]
+        ports:
+        - name: api
+          containerPort: 8888
+        livenessProbe:
+          httpGet:
+            path: /ping
+            port: api
+        readinessProbe:
+          httpGet:
+            path: /ping
+            port: api
+        volumeMounts:
+        - name: data
+          mountPath: /var/lib/chronograf
+        resources:
+          requests:
+            cpu: 100m
+            memory: 1000Mi
+          limits:
+            cpu: 2000m
+            memory: 1000Mi

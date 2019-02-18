@@ -1,0 +1,23 @@
+# monitoring/chronograf/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: monitoring
+  name: chronograf-ss
+spec:
+  clusterIP: None
+  selector:
+    app: chronograf
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: monitoring
+  name: chronograf
+spec:
+  selector:
+    app: chronograf
+  ports:
+  - name: api
+    port: 80
+    targetPort: api
