@@ -1,4 +1,4 @@
-# K8-s-TICK-deployment
+# K8-s-TICK-deployment for Monitoring K8s
 - To deploy the whole TICK stack. 
 
 Prior Requirements:  
